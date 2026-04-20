@@ -1,0 +1,90 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Autoterm Air 2D einrichten",
+        "description": "Gib den seriellen Port an, über den die Standheizung mit dem Raspberry Pi verbunden ist.",
+        "data": {
+          "port": "Serieller Port",
+          "scan_interval": "Abfrageintervall (Sekunden)"
+        },
+        "data_description": {
+          "port": "Serieller USB-Port, z.B. /dev/ttyUSB0",
+          "scan_interval": "Wie oft der Status abgefragt werden soll (5–60 Sekunden)"
+        }
+      },
+      "reconfigure": {
+        "title": "Autoterm Air 2D neu konfigurieren",
+        "description": "Seriellen Port oder Abfrageintervall ändern.",
+        "data": {
+          "port": "Serieller Port",
+          "scan_interval": "Abfrageintervall (Sekunden)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen – bitte Port und Verkabelung prüfen.",
+      "unknown": "Unbekannter Fehler."
+    },
+    "abort": {
+      "already_configured": "Gerät ist bereits konfiguriert",
+      "port_mismatch": "Der neue Port stimmt nicht mit diesem Konfigurationseintrag überein."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Autoterm Optionen",
+        "data": {
+          "scan_interval": "Abfrageintervall (Sekunden)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "heater": { "name": "Standheizung" }
+    },
+    "sensor": {
+      "temp_internal": { "name": "Innentemperatur" },
+      "temp_external": { "name": "Außentemperatur" },
+      "temp_heater": { "name": "Heizungstemperatur" },
+      "voltage": { "name": "Batteriespannung" },
+      "fan_rpm_actual": { "name": "Lüfterdrehzahl" },
+      "fan_rpm_set": { "name": "Lüfterdrehzahl (Soll)" },
+      "status_text": {
+        "name": "Status",
+        "state": {
+          "standby": "Bereit",
+          "cooling_flame_sensor": "Kühle Flammfühler",
+          "ventilating": "Belüftung",
+          "ignition_prep": "Zündvorbereitung",
+          "glow_plug_heating": "Glühkerze heizt",
+          "ignition_1": "Zündung 1",
+          "ignition_2": "Zündung 2",
+          "burner_heating": "Brenner heizt",
+          "heating": "Heizen",
+          "fan_only": "Nur Lüften",
+          "cooling_down": "Abkühlen",
+          "shutting_down": "Herunterfahren"
+        }
+      },
+      "fuel_pump_freq": { "name": "Kraftstoffpumpenfrequenz" }
+    }
+  },
+  "exceptions": {
+    "freibrennschutz_aktiv": {
+      "message": "Ausschalten noch nicht möglich – die Mindestlaufzeit schützt die Heizung. Heizung muss mindestens {minutes} Minuten laufen. Noch {remaining} Sekunden warten."
+    },
+    "turn_on_failed": { "message": "Einschalten der Heizung fehlgeschlagen. Serielle Verbindung prüfen." },
+    "turn_off_failed": { "message": "Ausschalten der Heizung fehlgeschlagen. Serielle Verbindung prüfen." },
+    "fan_only_failed": { "message": "Wechsel in den Lüftermodus fehlgeschlagen." },
+    "set_temperature_failed": { "message": "Setzen der Zieltemperatur fehlgeschlagen." }
+  },
+  "issues": {
+    "unsupported_heater": {
+      "title": "Nicht unterstütztes Heizungsmodell erkannt",
+      "description": "Die Heizung meldet eine unbekannte Produkt-ID. Diese Integration ist für die Autoterm Air 2D (Planar 2D) ausgelegt. Das Verhalten kann unvorhersehbar sein."
+    }
+  }
+}

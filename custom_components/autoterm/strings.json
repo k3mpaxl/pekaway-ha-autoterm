@@ -1,0 +1,100 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Autoterm Air 2D",
+        "description": "Enter the serial port where the parking heater is connected to the Raspberry Pi.",
+        "data": {
+          "port": "Serial port",
+          "scan_interval": "Poll interval (seconds)"
+        },
+        "data_description": {
+          "port": "USB serial port, e.g. /dev/ttyUSB0",
+          "scan_interval": "How often to poll the heater status (5–60 seconds)"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Autoterm Air 2D",
+        "description": "Change the serial port or poll interval.",
+        "data": {
+          "port": "Serial port",
+          "scan_interval": "Poll interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect — please check the port and wiring.",
+      "unknown": "Unknown error."
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]",
+      "port_mismatch": "The new port does not match this config entry."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Autoterm options",
+        "data": {
+          "scan_interval": "Poll interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "heater": {
+        "name": "Parking heater"
+      }
+    },
+    "sensor": {
+      "temp_internal": { "name": "Indoor temperature" },
+      "temp_external": { "name": "Outdoor temperature" },
+      "temp_heater": { "name": "Heater temperature" },
+      "voltage": { "name": "Battery voltage" },
+      "fan_rpm_actual": { "name": "Fan speed" },
+      "fan_rpm_set": { "name": "Fan speed (target)" },
+      "status_text": {
+        "name": "Status",
+        "state": {
+          "standby": "Standby",
+          "cooling_flame_sensor": "Cooling flame sensor",
+          "ventilating": "Ventilating",
+          "ignition_prep": "Preparing ignition",
+          "glow_plug_heating": "Glow plug heating",
+          "ignition_1": "Ignition 1",
+          "ignition_2": "Ignition 2",
+          "burner_heating": "Burner heating",
+          "heating": "Heating",
+          "fan_only": "Fan only",
+          "cooling_down": "Cooling down",
+          "shutting_down": "Shutting down"
+        }
+      },
+      "fuel_pump_freq": { "name": "Fuel pump frequency" }
+    }
+  },
+  "exceptions": {
+    "freibrennschutz_aktiv": {
+      "message": "Cannot switch off yet — minimum run time protects the heater. Heater must run at least {minutes} minutes. Wait {remaining} more seconds."
+    },
+    "turn_on_failed": {
+      "message": "Failed to turn on the heater. Check the serial connection."
+    },
+    "turn_off_failed": {
+      "message": "Failed to turn off the heater. Check the serial connection."
+    },
+    "fan_only_failed": {
+      "message": "Failed to switch to fan-only mode."
+    },
+    "set_temperature_failed": {
+      "message": "Failed to set the target temperature."
+    }
+  },
+  "issues": {
+    "unsupported_heater": {
+      "title": "Unsupported heater model detected",
+      "description": "The heater reported an unknown product ID. The integration is designed for the Autoterm Air 2D (Planar 2D). Behavior may be unpredictable."
+    }
+  }
+}

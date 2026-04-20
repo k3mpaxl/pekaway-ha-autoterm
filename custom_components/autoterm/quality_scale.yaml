@@ -1,0 +1,126 @@
+# Autoterm Air 2D Integration — Home Assistant Integration Quality Scale
+#
+# Status pro Regel gemäß
+# https://developers.home-assistant.io/docs/core/integration-quality-scale/checklist
+#
+# done   — Regel ist erfüllt
+# todo   — Regel steht noch aus
+# exempt — Regel ist für diese Integration nicht zutreffend (mit Begründung)
+
+rules:
+  # ------------------------------------------------------------------ BRONZE
+  action-setup:
+    status: exempt
+    comment: |
+      Die Integration registriert keine eigenen Services. Sämtliche Interaktion
+      läuft über die Climate-Entity (HVAC-Mode, Temperatur, Lüfterstufe).
+  appropriate-polling: done
+  brands:
+    status: todo
+    comment: |
+      PR gegen home-assistant/brands mit Logos für "autoterm" noch offen.
+  common-modules: done
+  config-flow: done
+  config-flow-test-coverage:
+    status: todo
+    comment: |
+      tests/components/autoterm/test_config_flow.py noch zu schreiben.
+  dependency-transparency: done
+  docs-actions:
+    status: exempt
+    comment: Keine eigenen Services vorhanden.
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-removal-instructions:
+    status: todo
+    comment: README um "Removal Instructions" Abschnitt ergänzen.
+  entity-event-setup:
+    status: exempt
+    comment: Keine Entity abonniert externe Events über async_on_remove.
+  entity-unique-id: done
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure: done
+  test-before-setup: done
+  unique-config-entry: done
+
+  # ------------------------------------------------------------------ SILVER
+  action-exceptions: done
+  config-entry-unloading: done
+  docs-configuration-parameters: done
+  docs-installation-parameters: done
+  entity-unavailable: done
+  integration-owner: done
+  log-when-unavailable: done
+  parallel-updates: done
+  reauthentication-flow:
+    status: exempt
+    comment: |
+      Die Integration verwendet keine Credentials (Token, Passwörter). Sie
+      redet direkt mit einem lokalen seriellen Port.
+  test-coverage:
+    status: todo
+    comment: Test-Suite (Coordinator, Protocol Parsing) noch zu schreiben.
+
+  # ------------------------------------------------------------------ GOLD
+  devices: done
+  diagnostics: done
+  discovery:
+    status: exempt
+    comment: |
+      Serielle USB-Adapter (CP2102 etc.) haben in vielen Systemen keine
+      eindeutigen IDs. Ein zuverlässiges USB-Discovery ist nicht garantiert,
+      daher manuelle Konfiguration.
+  discovery-update-info:
+    status: exempt
+    comment: Siehe discovery.
+  docs-data-update: done
+  docs-examples: done
+  docs-known-limitations:
+    status: todo
+    comment: README um bekannte Limitierungen (nur Air 2D, MIN_RUN_TIME) ergänzen.
+  docs-supported-devices: done
+  docs-supported-functions: done
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices:
+    status: exempt
+    comment: Pro Config-Entry existiert genau ein Gerät (die Heizung).
+  entity-category: done
+  entity-device-class: done
+  entity-disabled-by-default: done
+  entity-translations: done
+  exception-translations: done
+  icon-translations:
+    status: exempt
+    comment: |
+      Alle Sensoren nutzen das jeweilige device_class oder eine passende
+      Standard-Icon-Zuweisung, eigene Icon-Translations bringen keinen Mehrwert.
+  reconfiguration-flow: done
+  repair-issues:
+    status: done
+    comment: |
+      Repair-Issue "unsupported_heater" wird ausgelöst, wenn die Heizung eine
+      unbekannte Produkt-ID meldet.
+  stale-devices:
+    status: exempt
+    comment: |
+      Pro Config-Entry existiert genau ein Gerät und es gibt kein Gateway, von
+      dem sich Sub-Geräte abmelden könnten. Beim Entfernen des Entry wird das
+      Gerät automatisch aus dem Device Registry entfernt.
+
+  # ------------------------------------------------------------------ PLATINUM
+  async-dependency:
+    status: todo
+    comment: |
+      pyserial ist blockierend; alle I/O-Aufrufe werden bereits via
+      hass.async_add_executor_job ausgelagert. Ein Wechsel auf pyserial-asyncio
+      ist optional.
+  inject-websession:
+    status: exempt
+    comment: Keine HTTP-Kommunikation, daher keine ClientSession.
+  strict-typing:
+    status: todo
+    comment: |
+      Basistypen sind vorhanden; vollständige strict-typing Durchsetzung
+      (mypy --strict) erfordert weitere Nachbesserungen.

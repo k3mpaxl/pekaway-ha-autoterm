@@ -1,0 +1,13 @@
+{
+  "domain": "autoterm",
+  "name": "Autoterm Air 2D",
+  "version": "2.0.0",
+  "documentation": "https://github.com/k3mpaxl/pekaway-ha-autoterm",
+  "issue_tracker": "https://github.com/k3mpaxl/pekaway-ha-autoterm/issues",
+  "codeowners": ["@k3mpaxl"],
+  "config_flow": true,
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "loggers": ["custom_components.autoterm"],
+  "requirements": ["pyserial==3.5"]
+}
