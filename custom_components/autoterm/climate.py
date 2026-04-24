@@ -33,6 +33,7 @@ from .const import (
     DEVICE_MODEL,
     DOMAIN,
     FAN_MODES,
+    HEATER_TEMP_SOURCE_EXTERNAL,
     HEATER_TEMP_SOURCE_MAP,
     MIN_RUN_TIME_SECONDS,
     PRESET_MODES,
@@ -280,7 +281,7 @@ class AutotermClimate(CoordinatorEntity[AutotermCoordinator], ClimateEntity):
             if external is not None:
                 return external
         data = self.coordinator.data or {}
-        if self._heater_temp_source_key == "external":
+        if self._heater_temp_source_key == HEATER_TEMP_SOURCE_EXTERNAL:
             value = data.get("temp_external")
             if value is not None:
                 return value
