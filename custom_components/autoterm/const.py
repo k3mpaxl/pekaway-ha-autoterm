@@ -58,6 +58,16 @@ FAN_MODES = [str(i) for i in range(1, 10)]
 DEFAULT_FAN_LEVEL = 5
 DEFAULT_TARGET_TEMP = 20
 
+# Betriebsmodi (Preset-Modes)
+# - "temperature": Heizung regelt auf eine Zieltemperatur. Lüfter wird von
+#   der Heizung automatisch angepasst (Temperaturquelle = Panel).
+# - "power": Heizung läuft auf fester Leistungs-/Lüfterstufe 1–9
+#   (Temperaturquelle = keine). Der Lüfter-Wert steuert hier die Heizleistung.
+PRESET_TEMPERATURE = "temperature"
+PRESET_POWER = "power"
+PRESET_MODES = [PRESET_TEMPERATURE, PRESET_POWER]
+DEFAULT_PRESET_MODE = PRESET_TEMPERATURE
+
 # Freibrennschutz: Mindestlaufzeit nach dem Einschalten (in Sekunden)
 # Die Heizung darf in dieser Zeit nicht ausgeschaltet werden
 MIN_RUN_TIME_SECONDS = 240  # 4 Minuten
@@ -65,6 +75,11 @@ MIN_RUN_TIME_SECONDS = 240  # 4 Minuten
 # Konfigurations-Keys
 CONF_PORT = "port"
 CONF_SCAN_INTERVAL = "scan_interval"
+CONF_EXTERNAL_TEMP_SENSOR = "external_temp_sensor"
+CONF_HYSTERESIS = "hysteresis"
+
+# Externer Temperaturfühler (HA-Entity als Thermostat)
+DEFAULT_HYSTERESIS = 0.5  # °C
 
 # Geräte-Infos
 DEVICE_MANUFACTURER = "Autoterm"

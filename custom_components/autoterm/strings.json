@@ -36,7 +36,13 @@
       "init": {
         "title": "Autoterm options",
         "data": {
-          "scan_interval": "Poll interval (seconds)"
+          "scan_interval": "Poll interval (seconds)",
+          "external_temp_sensor": "External temperature sensor",
+          "hysteresis": "Hysteresis (°C)"
+        },
+        "data_description": {
+          "external_temp_sensor": "Optional Home Assistant temperature sensor used to reach the target temperature. When set, the heater's internal setpoint is driven high/low by a two-point controller based on this sensor.",
+          "hysteresis": "Allowed deviation from the target before the controller switches state (0.1–5 °C)."
         }
       }
     }
@@ -44,7 +50,15 @@
   "entity": {
     "climate": {
       "heater": {
-        "name": "Parking heater"
+        "name": "Parking heater",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "temperature": "Temperature mode",
+              "power": "Power mode"
+            }
+          }
+        }
       }
     },
     "sensor": {

@@ -14,11 +14,15 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import selector
 import homeassistant.helpers.config_validation as cv
 
 from .const import (
+    CONF_EXTERNAL_TEMP_SENSOR,
+    CONF_HYSTERESIS,
     CONF_PORT,
     CONF_SCAN_INTERVAL,
+    DEFAULT_HYSTERESIS,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
@@ -162,13 +166,32 @@ class AutotermOptionsFlow(OptionsFlow):
             CONF_SCAN_INTERVAL,
             self.config_entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
         )
+        current_sensor = self.config_entry.options.get(CONF_EXTERNAL_TEMP_SENSOR)
+        current_hysteresis = self.config_entry.options.get(
+            CONF_HYSTERESIS, DEFAULT_HYSTERESIS
+        )
+
+        schema_dict: dict = {
+            vol.Optional(CONF_SCAN_INTERVAL, default=current): vol.All(
+                cv.positive_int, vol.Range(min=5, max=60)
+            ),
+            vol.Optional(
+                CONF_EXTERNAL_TEMP_SENSOR,
+                description={"suggested_value": current_sensor},
+            ): selector.EntitySelector(
+                selector.EntitySelectorConfig(
+                    domain="sensor",
+                    device_class="temperature",
+                )
+            ),
+            vol.Optional(
+                CONF_HYSTERESIS, default=current_hysteresis
+            ): vol.All(
+                vol.Coerce(float), vol.Range(min=0.1, max=5.0)
+            ),
+        }
+
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(CONF_SCAN_INTERVAL, default=current): vol.All(
-                        cv.positive_int, vol.Range(min=5, max=60)
-                    )
-                }
-            ),
+            data_schema=vol.Schema(schema_dict),
         )

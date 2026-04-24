@@ -36,14 +36,30 @@
       "init": {
         "title": "Autoterm Optionen",
         "data": {
-          "scan_interval": "Abfrageintervall (Sekunden)"
+          "scan_interval": "Abfrageintervall (Sekunden)",
+          "external_temp_sensor": "Externer Temperaturfühler",
+          "hysteresis": "Hysterese (°C)"
+        },
+        "data_description": {
+          "external_temp_sensor": "Optionaler Home-Assistant-Temperatursensor, mit dem die Zieltemperatur erreicht wird. Ist er gesetzt, regelt ein Zweipunktregler den internen Sollwert der Heizung anhand dieses Sensors.",
+          "hysteresis": "Zulässige Abweichung von der Zieltemperatur, bevor der Regler umschaltet (0,1–5 °C)."
         }
       }
     }
   },
   "entity": {
     "climate": {
-      "heater": { "name": "Standheizung" }
+      "heater": {
+        "name": "Standheizung",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "temperature": "Temperaturmodus",
+              "power": "Leistungsmodus"
+            }
+          }
+        }
+      }
     },
     "sensor": {
       "temp_internal": { "name": "Innentemperatur" },

@@ -20,6 +20,7 @@ from .const import (
     BAUD_RATE,
     SERIAL_TIMEOUT,
     TEMP_SOURCE_PANEL,
+    TEMP_SOURCE_NONE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -215,23 +216,42 @@ class AutotermProtocol:
             "is_off": is_off,
         }
 
-    def turn_on(self, target_temp: int = 20, fan_level: int = 5) -> bool:
+    def turn_on(
+        self,
+        target_temp: int = 20,
+        fan_level: int = 5,
+        power_mode: bool = False,
+    ) -> bool:
         """Heizung einschalten.
 
         Args:
-            target_temp: Zieltemperatur in °C (8-35)
-            fan_level: Lüfterstufe (1-9)
+            target_temp: Zieltemperatur in °C (8-35). Im Leistungsmodus
+                wird dieser Wert von der Heizung ignoriert, aber der
+                Vollständigkeit halber mitgesendet.
+            fan_level: Lüfter-/Leistungsstufe (1-9). Im Temperaturmodus
+                wird der Lüfter von der Heizung automatisch angepasst –
+                der gesetzte Wert ist eine Vorgabe. Im Leistungsmodus
+                steuert dieser Wert die tatsächliche Heizleistung.
+            power_mode: ``True`` → Leistungsmodus (``temp_source=NONE``),
+                ``False`` → Temperaturmodus (``temp_source=PANEL``).
 
         Returns:
             True bei Erfolg, False bei Fehler.
         """
         target_temp = max(8, min(35, target_temp))
         fan_level = max(1, min(9, fan_level))
+        temp_source = TEMP_SOURCE_NONE if power_mode else TEMP_SOURCE_PANEL
 
-        # Payload: work_time_disable=1, work_time=0, temp_source=panel(2), temp, wait_mode=0, fan
-        payload = bytes([0x01, 0x00, TEMP_SOURCE_PANEL, target_temp, 0x00, fan_level])
+        # Payload: work_time_disable=1, work_time=0, temp_source,
+        # temp, wait_mode=0, fan/level
+        payload = bytes(
+            [0x01, 0x00, temp_source, target_temp, 0x00, fan_level]
+        )
         _LOGGER.info(
-            "Heizung einschalten: Temperatur=%d°C, Lüfterstufe=%d", target_temp, fan_level
+            "Heizung einschalten: Modus=%s, Temperatur=%d°C, Stufe=%d",
+            "Leistung" if power_mode else "Temperatur",
+            target_temp,
+            fan_level,
         )
         with self._lock:
             response = self._send_command(CMD_TURN_ON, payload)
