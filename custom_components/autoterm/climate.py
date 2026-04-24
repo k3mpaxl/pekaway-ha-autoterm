@@ -22,8 +22,10 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     CONF_EXTERNAL_TEMP_SENSOR,
+    CONF_HEATER_TEMP_SOURCE,
     CONF_HYSTERESIS,
     DEFAULT_FAN_LEVEL,
+    DEFAULT_HEATER_TEMP_SOURCE,
     DEFAULT_HYSTERESIS,
     DEFAULT_PRESET_MODE,
     DEFAULT_TARGET_TEMP,
@@ -31,6 +33,7 @@ from .const import (
     DEVICE_MODEL,
     DOMAIN,
     FAN_MODES,
+    HEATER_TEMP_SOURCE_MAP,
     MIN_RUN_TIME_SECONDS,
     PRESET_MODES,
     PRESET_POWER,
@@ -101,15 +104,21 @@ class AutotermClimate(CoordinatorEntity[AutotermCoordinator], ClimateEntity):
         # Zeitpunkt des letzten Einschaltens – None solange unbekannt.
         self._turn_on_time: datetime | None = None
 
-        # Externer Temperaturfühler (optional)
+        # Externer Temperaturfühler (optional, Home-Assistant-Sensor als
+        # Software-Thermostat für den Innenraum).
         self._external_sensor: str | None = entry.options.get(
             CONF_EXTERNAL_TEMP_SENSOR
         )
         self._hysteresis: float = float(
             entry.options.get(CONF_HYSTERESIS, DEFAULT_HYSTERESIS)
         )
+        # Temperaturquelle der Heizungs-Firmware (panel/internal/external).
+        # Unabhängig vom HA-Sensor – wird auch ohne diesen verwendet.
+        self._heater_temp_source_key: str = entry.options.get(
+            CONF_HEATER_TEMP_SOURCE, DEFAULT_HEATER_TEMP_SOURCE
+        )
         # Zuletzt an die Heizung gesendeter interner Soll-Wert (TEMP_MAX oder TEMP_MIN),
-        # wenn extern geregelt wird. None solange noch nichts gesendet wurde.
+        # wenn der HA-Sensor aktiv ist. None solange noch nichts gesendet wurde.
         self._last_commanded_heater_temp: int | None = None
 
     async def async_added_to_hass(self) -> None:
@@ -255,17 +264,27 @@ class AutotermClimate(CoordinatorEntity[AutotermCoordinator], ClimateEntity):
 
     @property
     def current_temperature(self) -> float | None:
-        """Aktuelle Innentemperatur.
+        """Aktuelle Raumtemperatur.
 
-        Ist ein externer Temperaturfühler konfiguriert, wird dessen Wert
-        verwendet – sonst die panelinterne Temperatur der Heizung.
+        Priorität:
+        1. Optionaler HA-Innenraum-Sensor (CONF_EXTERNAL_TEMP_SENSOR), falls
+           konfiguriert und verfügbar.
+        2. Hardware-Temperaturquelle der Heizung entsprechend der
+           konfigurierten ``heater_temp_source``:
+           - ``panel`` / ``internal`` → ``temp_internal`` der Heizung
+           - ``external`` → ``temp_external`` der Heizung (Hardware-Fühler)
+        3. Fallback: ``temp_internal``.
         """
         if self._external_sensor:
             external = self._read_external_temp()
             if external is not None:
                 return external
-        data = self.coordinator.data
-        return data.get("temp_internal") if data else None
+        data = self.coordinator.data or {}
+        if self._heater_temp_source_key == "external":
+            value = data.get("temp_external")
+            if value is not None:
+                return value
+        return data.get("temp_internal")
 
     @property
     def target_temperature(self) -> float:
@@ -290,6 +309,7 @@ class AutotermClimate(CoordinatorEntity[AutotermCoordinator], ClimateEntity):
             "status": data.get("status_text"),
             "freibrennschutz_aktiv": self._freibrenn_schutz_aktiv(),
             "preset_mode": self._preset_mode,
+            "heater_temp_source": self._heater_temp_source_key,
         }
         if self._freibrenn_schutz_aktiv():
             attrs["ausschalten_gesperrt_noch_sekunden"] = (
@@ -372,8 +392,14 @@ class AutotermClimate(CoordinatorEntity[AutotermCoordinator], ClimateEntity):
         else:
             initial_temp = self._target_temp
 
+        temp_source = HEATER_TEMP_SOURCE_MAP.get(self._heater_temp_source_key)
+
         success = await self.hass.async_add_executor_job(
-            self._protocol.turn_on, initial_temp, fan_level, power_mode
+            self._protocol.turn_on,
+            initial_temp,
+            fan_level,
+            power_mode,
+            temp_source,
         )
         if not success:
             raise HomeAssistantError(

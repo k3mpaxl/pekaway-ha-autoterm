@@ -37,13 +37,24 @@
         "title": "Autoterm Optionen",
         "data": {
           "scan_interval": "Abfrageintervall (Sekunden)",
-          "external_temp_sensor": "Externer Temperaturfühler",
+          "heater_temp_source": "Temperaturquelle der Heizung",
+          "external_temp_sensor": "Innenraumsensor (Home Assistant)",
           "hysteresis": "Hysterese (°C)"
         },
         "data_description": {
-          "external_temp_sensor": "Optionaler Home-Assistant-Temperatursensor, mit dem die Zieltemperatur erreicht wird. Ist er gesetzt, regelt ein Zweipunktregler den internen Sollwert der Heizung anhand dieses Sensors.",
-          "hysteresis": "Zulässige Abweichung von der Zieltemperatur, bevor der Regler umschaltet (0,1–5 °C)."
+          "heater_temp_source": "Welchen Sensor die Heizungs-Firmware selbst zur Temperaturregelung verwendet. Unabhängig vom Home-Assistant-Innenraumsensor unten.",
+          "external_temp_sensor": "Optionaler Home-Assistant-Temperatursensor als Innenraum-Thermostat. Ist er gesetzt, regelt ein Zweipunktregler den internen Sollwert der Heizung anhand dieses Sensors.",
+          "hysteresis": "Zulässige Abweichung von der Zieltemperatur, bevor der Home-Assistant-Thermostat umschaltet (0,1–5 °C)."
         }
+      }
+    }
+  },
+  "selector": {
+    "heater_temp_source": {
+      "options": {
+        "panel": "Bedienpanel",
+        "internal": "Heizgerät (eingebaut)",
+        "external": "Externer Sensor an der Heizung"
       }
     }
   },

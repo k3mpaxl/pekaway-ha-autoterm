@@ -77,9 +77,28 @@ CONF_PORT = "port"
 CONF_SCAN_INTERVAL = "scan_interval"
 CONF_EXTERNAL_TEMP_SENSOR = "external_temp_sensor"
 CONF_HYSTERESIS = "hysteresis"
+CONF_HEATER_TEMP_SOURCE = "heater_temp_source"
 
 # Externer Temperaturfühler (HA-Entity als Thermostat)
-DEFAULT_HYSTERESIS = 0.5  # °C
+DEFAULT_HYSTERESIS = 1.0  # °C (laut Autoterm-Doku Standardwert)
+
+# Temperaturquelle der Heizungs-Firmware (unabhängig vom HA-Sensor).
+# Werte passen zu TEMP_SOURCE_* weiter oben.
+HEATER_TEMP_SOURCE_PANEL = "panel"
+HEATER_TEMP_SOURCE_INTERNAL = "internal"
+HEATER_TEMP_SOURCE_EXTERNAL = "external"
+HEATER_TEMP_SOURCES = [
+    HEATER_TEMP_SOURCE_PANEL,
+    HEATER_TEMP_SOURCE_INTERNAL,
+    HEATER_TEMP_SOURCE_EXTERNAL,
+]
+DEFAULT_HEATER_TEMP_SOURCE = HEATER_TEMP_SOURCE_PANEL
+
+HEATER_TEMP_SOURCE_MAP = {
+    HEATER_TEMP_SOURCE_PANEL: TEMP_SOURCE_PANEL,
+    HEATER_TEMP_SOURCE_INTERNAL: TEMP_SOURCE_INTERNAL,
+    HEATER_TEMP_SOURCE_EXTERNAL: TEMP_SOURCE_EXTERNAL,
+}
 
 # Geräte-Infos
 DEVICE_MANUFACTURER = "Autoterm"

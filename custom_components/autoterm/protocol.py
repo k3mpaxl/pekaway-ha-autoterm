@@ -221,6 +221,7 @@ class AutotermProtocol:
         target_temp: int = 20,
         fan_level: int = 5,
         power_mode: bool = False,
+        temp_source: int | None = None,
     ) -> bool:
         """Heizung einschalten.
 
@@ -233,23 +234,34 @@ class AutotermProtocol:
                 der gesetzte Wert ist eine Vorgabe. Im Leistungsmodus
                 steuert dieser Wert die tatsächliche Heizleistung.
             power_mode: ``True`` → Leistungsmodus (``temp_source=NONE``),
-                ``False`` → Temperaturmodus (``temp_source=PANEL``).
+                ``False`` → Temperaturmodus.
+            temp_source: Optional, nur im Temperaturmodus relevant. Einer
+                der ``TEMP_SOURCE_*``-Werte. Default (None) entspricht
+                ``TEMP_SOURCE_PANEL``. Wird von ``power_mode=True``
+                überschrieben (dann immer ``TEMP_SOURCE_NONE``).
 
         Returns:
             True bei Erfolg, False bei Fehler.
         """
         target_temp = max(8, min(35, target_temp))
         fan_level = max(1, min(9, fan_level))
-        temp_source = TEMP_SOURCE_NONE if power_mode else TEMP_SOURCE_PANEL
+
+        if power_mode:
+            effective_source = TEMP_SOURCE_NONE
+        elif temp_source is None:
+            effective_source = TEMP_SOURCE_PANEL
+        else:
+            effective_source = temp_source
 
         # Payload: work_time_disable=1, work_time=0, temp_source,
         # temp, wait_mode=0, fan/level
         payload = bytes(
-            [0x01, 0x00, temp_source, target_temp, 0x00, fan_level]
+            [0x01, 0x00, effective_source, target_temp, 0x00, fan_level]
         )
         _LOGGER.info(
-            "Heizung einschalten: Modus=%s, Temperatur=%d°C, Stufe=%d",
+            "Heizung einschalten: Modus=%s, Quelle=%d, Temp=%d°C, Stufe=%d",
             "Leistung" if power_mode else "Temperatur",
+            effective_source,
             target_temp,
             fan_level,
         )

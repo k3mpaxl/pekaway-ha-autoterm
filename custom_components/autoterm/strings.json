@@ -37,13 +37,24 @@
         "title": "Autoterm options",
         "data": {
           "scan_interval": "Poll interval (seconds)",
-          "external_temp_sensor": "External temperature sensor",
+          "heater_temp_source": "Heater temperature source",
+          "external_temp_sensor": "Indoor temperature sensor (Home Assistant)",
           "hysteresis": "Hysteresis (°C)"
         },
         "data_description": {
-          "external_temp_sensor": "Optional Home Assistant temperature sensor used to reach the target temperature. When set, the heater's internal setpoint is driven high/low by a two-point controller based on this sensor.",
-          "hysteresis": "Allowed deviation from the target before the controller switches state (0.1–5 °C)."
+          "heater_temp_source": "Which sensor the heater firmware itself uses to reach the target temperature. Independent of the Home Assistant indoor sensor below.",
+          "external_temp_sensor": "Optional Home Assistant temperature sensor used as an indoor thermostat. When set, a two-point controller drives the heater setpoint based on this sensor.",
+          "hysteresis": "Allowed deviation from the target before the Home Assistant thermostat switches state (0.1–5 °C)."
         }
+      }
+    }
+  },
+  "selector": {
+    "heater_temp_source": {
+      "options": {
+        "panel": "Control panel",
+        "internal": "Heater unit (built-in)",
+        "external": "External sensor wired to the heater"
       }
     }
   },

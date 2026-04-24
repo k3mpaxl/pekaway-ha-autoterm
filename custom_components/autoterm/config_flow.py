@@ -19,13 +19,16 @@ import homeassistant.helpers.config_validation as cv
 
 from .const import (
     CONF_EXTERNAL_TEMP_SENSOR,
+    CONF_HEATER_TEMP_SOURCE,
     CONF_HYSTERESIS,
     CONF_PORT,
     CONF_SCAN_INTERVAL,
+    DEFAULT_HEATER_TEMP_SOURCE,
     DEFAULT_HYSTERESIS,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    HEATER_TEMP_SOURCES,
 )
 from .protocol import AutotermProtocol
 
@@ -170,10 +173,22 @@ class AutotermOptionsFlow(OptionsFlow):
         current_hysteresis = self.config_entry.options.get(
             CONF_HYSTERESIS, DEFAULT_HYSTERESIS
         )
+        current_heater_source = self.config_entry.options.get(
+            CONF_HEATER_TEMP_SOURCE, DEFAULT_HEATER_TEMP_SOURCE
+        )
 
         schema_dict: dict = {
             vol.Optional(CONF_SCAN_INTERVAL, default=current): vol.All(
                 cv.positive_int, vol.Range(min=5, max=60)
+            ),
+            vol.Optional(
+                CONF_HEATER_TEMP_SOURCE, default=current_heater_source
+            ): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=HEATER_TEMP_SOURCES,
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                    translation_key=CONF_HEATER_TEMP_SOURCE,
+                )
             ),
             vol.Optional(
                 CONF_EXTERNAL_TEMP_SENSOR,
